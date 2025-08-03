@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgentForge - AI Agent Management</title>
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --border-color: #dddddd;
+            --primary-color: #007bff;
+            --danger-color: #dc3545;
+            --success-color: #28a745;
+        }
+
+        .dark-mode {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --text-primary: #f0f0f0;
+            --text-secondary: #cccccc;
+            --border-color: #444444;
+            --primary-color: #4a9cff;
+            --danger-color: #ff6b6b;
+            --success-color: #6bff8b;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.3s;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--bg-primary);
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .theme-switch {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+        }
+        
+        .nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .nav button {
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+        
+        .nav button.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        
+        .btn {
+            background: var(--primary-color);
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        
+        .btn:hover {
+            filter: brightness(0.9);
+        }
+        
+        .btn-danger {
+            background: var(--danger-color);
+        }
+        
+        .btn-success {
+            background: var(--success-color);
+        }
+        
+        .agent-card {
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            margin-bottom: 15px;
+            background: var(--bg-secondary);
+            border-radius: 5px;
+        }
+        
+        .agent-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-container {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            background: var(--bg-secondary);
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        
+        .message {
+            margin-bottom: 10px;
+        }
+        
+        .message.user {
+            text-align: right;
+        }
+        
+        .message.ai {
+            text-align: left;
+        }
+        
+        .message-content {
+            display: inline-block;
+            padding: 8px;
+            border-radius: 5px;
+            max-width: 70%;
+        }
+        
+        .message.user .message-content {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .message.ai .message-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .error {
+            color: var(--danger-color);
+            padding: 10px;
+            background: rgba(220, 53, 69, 0.1);
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .success {
+            color: var(--success-color);
+            padding: 10px;
+            background: rgba(40, 167, 69, 0.1);
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .knowledge-source {
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>🤖 AgentForge</h1>
+                <p>AI Agent Management System</p>
+            </div>
+            <button class="theme-switch" id="themeToggle">🌙</button>
+        </div>
+
+        <div class="nav">
+            <button onclick="showSection('agents')" class="active">My Agents</button>
+            <button onclick="showSection('create')">Create Agent</button>
+            <button onclick="showSection('knowledge')">Add Knowledge</button>
+            <button onclick="showSection('chat')">Chat</button>
+            <button onclick="showSection('gdrive')">Google Drive</button>
+        </div>
+
+        <!-- Agents Section -->
+        <div id="agents" class="section active">
+            <h2>Your AI Agents</h2>
+            <div id="agentsList">Loading agents...</div>
+            <button class="btn" onclick="loadAgents()">Refresh</button>
+        </div>
+
+        <!-- Create Agent Section -->
+        <div id="create" class="section">
+            <h2>Create New Agent</h2>
+            <form id="createForm">
+                <div class="form-group">
+                    <label>Agent Name:</label>
+                    <input type="text" id="agentName" required>
+                </div>
+                <div class="form-group">
+                    <label>AI Model:</label>
+                    <select id="agentModel" required>
+                        <option value="">Select Model</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Description:</label>
+                    <textarea id="agentDesc" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="embedEnabled"> Enable Embedding
+                    </label>
+                </div>
+                <button type="submit" class="btn">Create Agent</button>
+            </form>
+            <div id="createResult"></div>
+        </div>
+
+        <!-- Knowledge Section -->
+        <div id="knowledge" class="section">
+            <h2>Add Knowledge to Agent</h2>
+            <div class="form-group">
+                <label>Select Agent:</label>
+                <select id="knowledgeAgent">
+                    <option value="">Select Agent</option>
+                </select>
+            </div>
+            
+            <div id="knowledgeForm" class="hidden">
+                <form id="uploadForm">
+                    <div class="form-group">
+                        <label>Knowledge Type:</label>
+                        <select id="sourceType" onchange="toggleInputs()">
+                            <option value="text">Text</option>
+                            <option value="pdf">PDF File</option>
+                            <option value="url">Website URL</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="textInput">
+                        <label>Enter Text:</label>
+                        <textarea id="textContent" rows="5"></textarea>
+                    </div>
+                    
+                    <div class="form-group hidden" id="fileInput">
+                        <label>Select PDF:</label>
+                        <input type="file" id="pdfFile" accept=".pdf">
+                    </div>
+                    
+                    <div class="form-group hidden" id="urlInput">
+                        <label>Website URL:</label>
+                        <input type="url" id="urlContent">
+                    </div>
+                    
+                    <button type="submit" class="btn">Add Knowledge</button>
+                </form>
+                
+                <h3>Agent Knowledge</h3>
+                <div id="knowledgeList">Loading knowledge sources...</div>
+            </div>
+            <div id="knowledgeResult"></div>
+        </div>
+
+        <!-- Chat Section -->
+        <div id="chat" class="section">
+            <h2>Chat with Agent</h2>
+            <div class="form-group">
+                <label>Select Agent:</label>
+                <select id="chatAgent">
+                    <option value="">Select Agent</option>
+                </select>
+            </div>
+            
+            <div id="chatInterface" class="hidden">
+                <div id="chatMessages" class="chat-container"></div>
+                <div class="form-group">
+                    <input type="text" id="chatInput" placeholder="Type your message...">
+                    <button class="btn" onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+            <div id="chatResult"></div>
+        </div>
+
+        <!-- Google Drive Section -->
+        <div id="gdrive" class="section">
+            <h2>Google Drive Integration</h2>
+            <div id="gdriveStatus">
+                <p>Google Drive not connected</p>
+                <button class="btn" onclick="connectGoogleDrive()">Connect Google Drive</button>
+            </div>
+            
+            <div id="gdriveFiles" class="hidden">
+                <h3>Your Google Drive Files</h3>
+                <div id="fileList">Loading files...</div>
+                <div class="form-group">
+                    <label>Select Agent to Import To:</label>
+                    <select id="gdriveAgent">
+                        <option value="">Select Agent</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="importFile()" disabled>Import Selected</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let agents = [];
+        let currentSession = Date.now().toString();
+        const API_BASE = window.location.origin;
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Theme toggle
+            const themeToggle = document.getElementById('themeToggle');
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeToggle.textContent = '☀️';
+            }
+            
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                if (document.body.classList.contains('dark-mode')) {
+                    localStorage.setItem('theme', 'dark');
+                    themeToggle.textContent = '☀️';
+                } else {
+                    localStorage.setItem('theme', 'light');
+                    themeToggle.textContent = '🌙';
+                }
+            });
+            
+            loadModels();
+            loadAgents();
+            checkGoogleAuth();
+            
+            document.getElementById('createForm').addEventListener('submit', createAgent);
+            document.getElementById('uploadForm').addEventListener('submit', uploadKnowledge);
+            document.getElementById('chatInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') sendMessage();
+            });
+            
+            document.getElementById('knowledgeAgent').addEventListener('change', function() {
+                if (this.value) {
+                    document.getElementById('knowledgeForm').classList.remove('hidden');
+                    loadKnowledgeSources(this.value);
+                } else {
+                    document.getElementById('knowledgeForm').classList.add('hidden');
+                }
+            });
+            
+            document.getElementById('chatAgent').addEventListener('change', function() {
+                if (this.value) {
+                    document.getElementById('chatInterface').classList.remove('hidden');
+                    document.getElementById('chatMessages').innerHTML = '';
+                } else {
+                    document.getElementById('chatInterface').classList.add('hidden');
+                }
+            });
+        });
+
+        function showSection(sectionName) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+            document.getElementById(sectionName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function showMessage(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `<div class="${type}">${message}</div>`;
+            setTimeout(() => container.innerHTML = '', 3000);
+        }
+
+        async function loadModels() {
+            try {
+                const response = await fetch(`${API_BASE}/models`);
+                const data = await response.json();
+                
+                const select = document.getElementById('agentModel');
+                select.innerHTML = '<option value="">Select Model</option>';
+                data.models.forEach(model => {
+                    select.innerHTML += `<option value="${model}">${model}</option>`;
+                });
+            } catch (error) {
+                console.error('Error loading models:', error);
+            }
+        }
+
+        async function loadAgents() {
+            try {
+                const response = await fetch(`${API_BASE}/agents`);
+                agents = await response.json();
+                
+                const container = document.getElementById('agentsList');
+                if (agents.length === 0) {
+                    container.innerHTML = '<p>No agents created yet. Create your first agent!</p>';
+                } else {
+                    container.innerHTML = agents.map(agent => `
+                        <div class="agent-card">
+                            <h3>${agent.name}</h3>
+                            <p><strong>Model:</strong> ${agent.model}</p>
+                            <p><strong>Description:</strong> ${agent.description || 'No description'}</p>
+                            <p><strong>Conversations:</strong> ${agent.total_conversations}</p>
+                            <div class="agent-actions">
+                                <button class="btn" onclick="selectForChat('${agent.id}')">Chat</button>
+                                <button class="btn" onclick="selectForKnowledge('${agent.id}')">Add Knowledge</button>
+                                <button class="btn" onclick="editAgent('${agent.id}')">Edit</button>
+                                <button class="btn btn-danger" onclick="deleteAgent('${agent.id}')">Delete</button>
+                                <button class="btn" onclick="copyEmbedCode('${agent.id}')">Embed</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+                
+                updateSelects();
+            } catch (error) {
+                document.getElementById('agentsList').innerHTML = '<p class="error">Error loading agents</p>';
+            }
+        }
+
+        function updateSelects() {
+            const selects = ['knowledgeAgent', 'chatAgent', 'gdriveAgent'];
+            selects.forEach(id => {
+                const select = document.getElementById(id);
+                select.innerHTML = '<option value="">Select Agent</option>';
+                agents.forEach(agent => {
+                    select.innerHTML += `<option value="${agent.id}">${agent.name}</option>`;
+                });
+            });
+        }
+
+        async function createAgent(event) {
+            event.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('name', document.getElementById('agentName').value);
+            formData.append('model', document.getElementById('agentModel').value);
+            formData.append('description', document.getElementById('agentDesc').value);
+            formData.append('embed_enabled', document.getElementById('embedEnabled').checked ? 'true' : 'false');
+            
+            try {
+                const response = await fetch(`${API_BASE}/agents`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    showMessage('createResult', 'Agent created successfully!', 'success');
+                    document.getElementById('createForm').reset();
+                    loadAgents();
+                } else {
+                    const error = await response.json();
+                    showMessage('createResult', error.detail || 'Error creating agent', 'error');
+                }
+            } catch (error) {
+                showMessage('createResult', 'Error creating agent', 'error');
+            }
+        }
+
+        async function editAgent(agentId) {
+            const agent = agents.find(a => a.id === agentId);
+            if (!agent) return;
+            
+            showSection('create');
+            document.getElementById('agentName').value = agent.name;
+            document.getElementById('agentModel').value = agent.model;
+            document.getElementById('agentDesc').value = agent.description || '';
+            document.getElementById('embedEnabled').checked = agent.embed_enabled;
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        async function deleteAgent(agentId) {
+            if (!confirm('Are you sure you want to delete this agent?')) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/agents/${agentId}`, { method: 'DELETE' });
+                if (response.ok) {
+                    loadAgents();
+                } else {
+                    alert('Error deleting agent');
+                }
+            } catch (error) {
+                alert('Error deleting agent');
+            }
+        }
+
+        function selectForChat(agentId) {
+            showSection('chat');
+            document.getElementById('chatAgent').value = agentId;
+            document.getElementById('chatInterface').classList.remove('hidden');
+            document.getElementById('chatMessages').innerHTML = '';
+        }
+
+        function selectForKnowledge(agentId) {
+            showSection('knowledge');
+            document.getElementById('knowledgeAgent').value = agentId;
+            document.getElementById('knowledgeForm').classList.remove('hidden');
+            loadKnowledgeSources(agentId);
+        }
+
+        function toggleInputs() {
+            const type = document.getElementById('sourceType').value;
+            document.getElementById('textInput').classList.toggle('hidden', type !== 'text');
+            document.getElementById('fileInput').classList.toggle('hidden', type !== 'pdf');
+            document.getElementById('urlInput').classList.toggle('hidden', type !== 'url');
+        }
+
+        async function loadKnowledgeSources(agentId) {
+            try {
+                const response = await fetch(`${API_BASE}/agents/${agentId}/knowledge`);
+                const sources = await response.json();
+                
+                const container = document.getElementById('knowledgeList');
+                if (sources.length === 0) {
+                    container.innerHTML = '<p>No knowledge sources added yet.</p>';
+                } else {
+                    container.innerHTML = sources.map(source => `
+                        <div class="knowledge-source">
+                            <div>
+                                <strong>${source.source_type.toUpperCase()}:</strong>
+                                <p>${source.content}</p>
+                                <small>Added: ${new Date(source.created_at).toLocaleString()}</small>
+                            </div>
+                            <button class="btn btn-danger" onclick="deleteKnowledgeSource('${agentId}', '${source.id}')">Delete</button>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                document.getElementById('knowledgeList').innerHTML = '<p class="error">Error loading knowledge sources</p>';
+            }
+        }
+
+        async function deleteKnowledgeSource(agentId, sourceId) {
+            if (!confirm('Are you sure you want to delete this knowledge source?')) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/agents/${agentId}/knowledge/${sourceId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    loadKnowledgeSources(agentId);
+                } else {
+                    alert('Error deleting knowledge source');
+                }
+            } catch (error) {
+                alert('Error deleting knowledge source');
+            }
+        }
+
+        async function uploadKnowledge(event) {
+            event.preventDefault();
+            const agentId = document.getElementById('knowledgeAgent').value;
+            if (!agentId) {
+                showMessage('knowledgeResult', 'Please select an agent first', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            const sourceType = document.getElementById('sourceType').value;
+            formData.append('source_type', sourceType);
+
+            if (sourceType === 'text') {
+                formData.append('text', document.getElementById('textContent').value);
+            } else if (sourceType === 'pdf') {
+                const file = document.getElementById('pdfFile').files[0];
+                if (!file) {
+                    showMessage('knowledgeResult', 'Please select a PDF file', 'error');
+                    return;
+                }
+                formData.append('file', file);
+            } else if (sourceType === 'url') {
+                formData.append('url', document.getElementById('urlContent').value);
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/agents/${agentId}/knowledge`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    showMessage('knowledgeResult', 'Knowledge added successfully!', 'success');
+                    document.getElementById('uploadForm').reset();
+                    toggleInputs();
+                    loadKnowledgeSources(agentId);
+                } else {
+                    const error = await response.json();
+                    showMessage('knowledgeResult', error.detail || 'Error adding knowledge', 'error');
+                }
+            } catch (error) {
+                showMessage('knowledgeResult', 'Error adding knowledge', 'error');
+            }
+        }
+
+        async function sendMessage() {
+            const agentId = document.getElementById('chatAgent').value;
+            const message = document.getElementById('chatInput').value.trim();
+            
+            if (!agentId || !message) return;
+
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML += `
+                <div class="message user">
+                    <div class="message-content">${message}</div>
+                </div>
+            `;
+            
+            document.getElementById('chatInput').value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                const response = await fetch(`${API_BASE}/agents/${agentId}/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: message,
+                        session_id: currentSession
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    chatMessages.innerHTML += `
+                        <div class="message ai">
+                            <div class="message-content">${data.response}</div>
+                        </div>
+                    `;
+                } else {
+                    const error = await response.json();
+                    chatMessages.innerHTML += `
+                        <div class="message ai">
+                            <div class="message-content" style="color: var(--danger-color);">Error: ${error.detail || 'Error getting response'}</div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                chatMessages.innerHTML += `
+                    <div class="message ai">
+                        <div class="message-content" style="color: var(--danger-color);">Connection error</div>
+                    </div>
+                `;
+            }
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function copyEmbedCode(agentId) {
+            const agent = agents.find(a => a.id === agentId);
+            if (!agent) return;
+            
+            if (!agent.embed_enabled) {
+                alert('Embedding is not enabled for this agent. Please enable it first.');
+                return;
+            }
+            
+            fetch(`${API_BASE}/agents/${agentId}/embed`)
+                .then(response => response.json())
+                .then(data => {
+                    const embedCode = data.iframe_code;
+                    navigator.clipboard.writeText(embedCode)
+                        .then(() => alert('Embed code copied to clipboard!'))
+                        .catch(err => alert('Failed to copy: ' + err));
+                });
+        }
+        
+        function connectGoogleDrive() {
+            window.location.href = `${API_BASE}/gdrive/auth`;
+        }
+        
+        async function checkGoogleAuth() {
+            try {
+                const response = await fetch(`${API_BASE}/gdrive/status`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.connected) {
+                        document.getElementById('gdriveStatus').classList.add('hidden');
+                        document.getElementById('gdriveFiles').classList.remove('hidden');
+                        loadGoogleFiles();
+                    }
+                }
+            } catch (error) {
+                console.log('Google Drive not connected');
+            }
+        }
+        
+        async function loadGoogleFiles() {
+            try {
+                const response = await fetch(`${API_BASE}/gdrive/files`);
+                const data = await response.json();
+                
+                const container = document.getElementById('fileList');
+                if (data.files.length === 0) {
+                    container.innerHTML = '<p>No files found in Google Drive</p>';
+                } else {
+                    container.innerHTML = data.files.map(file => `
+                        <div>
+                            <input type="radio" name="gdriveFile" value="${file.id}">
+                            <label>${file.name} (${file.mimeType})</label>
+                        </div>
+                    `).join('');
+                    document.querySelector('button[onclick="importFile()"]').disabled = false;
+                }
+            } catch (error) {
+                document.getElementById('fileList').innerHTML = '<p class="error">Error loading files</p>';
+            }
+        }
+        
+        function importFile() {
+            const fileId = document.querySelector('input[name="gdriveFile"]:checked')?.value;
+            const agentId = document.getElementById('gdriveAgent').value;
+            
+            if (!fileId || !agentId) {
+                alert('Please select a file and an agent');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file_id', fileId);
+            formData.append('agent_id', agentId);
+            
+            fetch(`${API_BASE}/gdrive/import`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('File imported successfully!');
+                    loadKnowledgeSources(agentId);
+                } else {
+                    alert('Error importing file: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error: ' + error.message);
+            });
+        }
+    </script>
+</body>
+</html>

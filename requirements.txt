@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+python-multipart
+sqlalchemy
+requests
+langchain-groq
+langchain-community
+langchain-core
+langchain-text-splitters
+PyPDF2
+google-auth-oauthlib
+google-api-python-client
+sentence-transformers
+faiss-cpu
+numpy
+pandas

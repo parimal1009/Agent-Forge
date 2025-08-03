@@ -1,0 +1,35 @@
+2025-06-08 01:47:00,962 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: sentence-transformers/all-MiniLM-L6-v2
+2025-06-08 10:49:27,347 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: sentence-transformers/all-MiniLM-L6-v2
+2025-06-08 10:49:45,717 - googleapiclient.discovery_cache - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-06-08 10:49:46,819 - AgentForge - INFO - Retrieved 20 Google Drive files
+2025-06-08 10:49:46,836 - googleapiclient.discovery_cache - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-06-08 10:49:47,705 - AgentForge - INFO - Retrieved 20 Google Drive files
+2025-06-08 10:50:56,377 - AgentForge - ERROR - Chat error: GROQ_API_KEY environment variable not set
+2025-06-08 10:52:35,503 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: sentence-transformers/all-MiniLM-L6-v2
+2025-06-08 10:53:02,135 - googleapiclient.discovery_cache - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-06-08 10:53:03,188 - AgentForge - INFO - Retrieved 20 Google Drive files
+2025-06-08 10:53:03,200 - googleapiclient.discovery_cache - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-06-08 10:53:04,210 - AgentForge - INFO - Retrieved 20 Google Drive files
+2025-06-08 10:53:58,728 - AgentForge - INFO - Created new QA chain for agent 516959a5-1df8-4a45-8de3-d896822a042a
+2025-06-08 10:53:59,306 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-08 10:53:59,358 - AgentForge - INFO - Chat response for agent 516959a5-1df8-4a45-8de3-d896822a042a in session 1749359985309
+2025-06-08 10:54:46,156 - googleapiclient.discovery_cache - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-06-08 10:54:47,228 - AgentForge - INFO - Retrieved 20 Google Drive files
+2025-06-08 10:54:47,238 - googleapiclient.discovery_cache - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-06-08 10:54:48,008 - AgentForge - INFO - Retrieved 20 Google Drive files
+2025-06-08 10:54:51,528 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-08 10:54:51,560 - AgentForge - INFO - Chat response for agent 516959a5-1df8-4a45-8de3-d896822a042a in session 1749360286084
+2025-06-08 10:57:58,903 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: sentence-transformers/all-MiniLM-L6-v2
+2025-06-08 10:58:09,945 - googleapiclient.discovery_cache - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-06-08 10:58:10,802 - AgentForge - INFO - Retrieved 20 Google Drive files
+2025-06-08 10:58:10,822 - googleapiclient.discovery_cache - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-06-08 10:58:11,722 - AgentForge - INFO - Retrieved 20 Google Drive files
+2025-06-08 10:58:24,088 - AgentForge - INFO - Created new QA chain for agent 516959a5-1df8-4a45-8de3-d896822a042a
+2025-06-08 10:58:24,597 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-06-08 10:58:24,638 - AgentForge - INFO - Chat response for agent 516959a5-1df8-4a45-8de3-d896822a042a in session 1749360489873
+2025-06-08 16:02:57,481 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: sentence-transformers/all-MiniLM-L6-v2
+2025-06-08 16:03:27,469 - googleapiclient.discovery_cache - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-06-08 16:03:28,289 - AgentForge - INFO - Retrieved 20 Google Drive files
+2025-06-08 16:03:28,321 - googleapiclient.discovery_cache - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-06-08 16:03:29,166 - AgentForge - INFO - Retrieved 20 Google Drive files
+2025-06-08 16:31:07,063 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: sentence-transformers/all-MiniLM-L6-v2
